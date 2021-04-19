@@ -8,12 +8,13 @@ page = requests.get(URL)
 
 soup = BeautifulSoup(page.content, 'html.parser')
 
-consilii = re.findall(r'[C]\w{7,12}\s\w{3,}\s\w{3,}', soup.prettify())
-for consilii in consilii:
-    print(consilii)
+f = open("consilii.txt", "w", encoding="utf-8")
 
-f = open("consil.txt", "w")
+consilii = re.findall(r'[C]\w{7,12}\s\w{3,}\s\w{3,}', soup.prettify())
+
 for consilii in consilii:
     f.write(consilii+"\n")
+    print(consilii)
+f.close()
 
 #print(soup.prettify())
