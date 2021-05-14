@@ -1,20 +1,36 @@
-import requests
 from bs4 import BeautifulSoup
-import re
+import requests
+from openpyxl import Workbook
+import csv
 
-URL = 'https://www.calitateaer.ro/public/management-page/management-page/?__locale=ro'
+#--------------------Preluam HTML-ul-------------------------------------------
 
-page = requests.get(URL)
-
+url = 'https://www.calitateaer.ro/public/management-page/management-page/?__locale=ro'
+page = requests.get(url)
 soup = BeautifulSoup(page.content, 'html.parser')
-
-f = open("consilii.txt", "w", encoding="utf-8")
-
-consilii = re.findall(r'[C]\w{7,12}\s\w{3,}\s\w{3,}', soup.prettify())
-
-for consilii in consilii:
-    f.write(consilii+"\n")
-    print(consilii)
-f.close()
-
 #print(soup.prettify())
+
+#--------------------Creeam fisierul pentru stocarea datelor-------------------
+
+filename = 'test.csv'
+f = open(filename, "w", encoding="utf-8")
+f.write("datele preluate sunt: "+"\n")
+
+#--------------------Dam scrape la datele din tabel folosind datele din HTMl------
+
+for heading in soup.find_all('h3', class_='post-title'):
+    print(heading.text)
+    f.write(heading.text)
+
+    for tr in soup.find_all('tr'):
+        print(tr.text)
+        f.write(tr.text)
+
+#-------------------------------Creeam fisierul XSlX----------------------------------
+
+wb = Workbook()
+ws = wb.active
+with open('test.csv', 'r+', encoding="utf-8") as f:
+    for row in csv.reader(f):
+        ws.append(row)
+wb.save('name.xlsx')
